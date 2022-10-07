@@ -12,7 +12,8 @@ import {
   Animated,
 } from 'react-native';
 import Toast from 'react-native-root-toast';
-import {COLOURS, Items} from '../../database/Database';
+import api from '../../services/api'
+import {COLOURS,} from '../../database/Database';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -30,24 +31,17 @@ const ProductInfo = ({route, navigation}) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      getDataFromDB();
+     async function getItem() {
+        let response = await api.get(`items/${productID}`);
+        setProduct(response.data);
+      }
+      getItem()
+
     });
 
     return unsubscribe;
   }, [navigation]);
 
-  //get product data by productID
-
-  const getDataFromDB = async () => {
-    for (let index = 0; index < Items.length; index++) {
-      if (Items[index].id == productID) {
-        await setProduct(Items[index]);
-        return;
-      }
-    }
-  };
-
-  //add to cart
 
   const addToCart = async id => {
     let itemArray = await AsyncStorage.getItem('cartItems');
@@ -62,7 +56,7 @@ const ProductInfo = ({route, navigation}) => {
           'Item Added Successfully to cart',
           Toast.SHORT,
         );
-        navigation.navigate('Home');
+        navigation.navigate('MyCart');
       } catch (error) {
         return error;
       }
@@ -82,22 +76,21 @@ const ProductInfo = ({route, navigation}) => {
     }
   };
 
-  //product horizontal scroll product card
   const renderProduct = ({item, index}) => {
     return (
       <View
         style={{
           width: width,
-          height: 240,
+          height: 340,
           alignItems: 'center',
           justifyContent: 'center',
         }}>
         <Image
-          source={item}
+          source={{uri: item}}
           style={{
             width: '100%',
             height: '100%',
-            resizeMode: 'contain',
+            resizeMode: 'cover',
           }}
         />
       </View>
@@ -150,7 +143,7 @@ const ProductInfo = ({route, navigation}) => {
             </TouchableOpacity>
           </View>
           <FlatList
-            data={product.productImageList ? product.productImageList : null}
+            data={[product.image, product.image, product.image] || null}
             horizontal
             renderItem={renderProduct}
             showsHorizontalScrollIndicator={false}
@@ -161,6 +154,7 @@ const ProductInfo = ({route, navigation}) => {
               [{nativeEvent: {contentOffset: {x: scrollX}}}],
               {useNativeDriver: false},
             )}
+            style={{paddingTop:15}}
           />
           <View
             style={{
@@ -171,8 +165,8 @@ const ProductInfo = ({route, navigation}) => {
               marginBottom: 16,
               marginTop: 32,
             }}>
-            {product.productImageList
-              ? product.productImageList.map((data, index) => {
+            {product.image
+              ? [product.image, product.image, product.image].map((data, index) => {
                   let opacity = position.interpolate({
                     inputRange: [index - 1, index, index + 1],
                     outputRange: [0.2, 1, 0.2],
@@ -199,28 +193,7 @@ const ProductInfo = ({route, navigation}) => {
             paddingHorizontal: 16,
             marginTop: 6,
           }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginVertical: 14,
-            }}>
-            <Entypo
-              name="shopping-cart"
-              style={{
-                fontSize: 18,
-                color: COLOURS.blue,
-                marginRight: 6,
-              }}
-            />
-            <Text
-              style={{
-                fontSize: 12,
-                color: COLOURS.black,
-              }}>
-              Shopping
-            </Text>
-          </View>
+          
           <View
             style={{
               flexDirection: 'row',
@@ -237,7 +210,7 @@ const ProductInfo = ({route, navigation}) => {
                 color: COLOURS.black,
                 maxWidth: '84%',
               }}>
-              {product.productName}
+              {product.name}
             </Text>
             <Ionicons
               name="link-outline"
@@ -298,7 +271,7 @@ const ProductInfo = ({route, navigation}) => {
                   }}
                 />
               </View>
-              <Text> Rustaveli Ave 57,{'\n'}17-001, Batume</Text>
+              <Text>We deliver your items cleaned {'\n'} within 24 hours and at the time required.</Text>
             </View>
             <Entypo
               name="chevron-right"
@@ -320,11 +293,7 @@ const ProductInfo = ({route, navigation}) => {
                 color: COLOURS.black,
                 marginBottom: 4,
               }}>
-              &#163; {product.productPrice}.00
-            </Text>
-            <Text>
-              Tax Rate 2%~ &#163;{product.productPrice / 20} (&#163;
-              {product.productPrice + product.productPrice / 20})
+              &#163; {product.price}
             </Text>
           </View>
         </View>
@@ -340,7 +309,7 @@ const ProductInfo = ({route, navigation}) => {
           alignItems: 'center',
         }}>
         <TouchableOpacity
-          onPress={() => (product.isAvailable ? addToCart(product.id) : null)}
+          onPress={() => addToCart(product.id)}
           style={{
             width: '86%',
             height: '90%',
@@ -357,7 +326,7 @@ const ProductInfo = ({route, navigation}) => {
               color: COLOURS.white,
               textTransform: 'uppercase',
             }}>
-            {product.isAvailable ? 'Add to cart' : 'Not Avialable'}
+            {'Add to cart'}
           </Text>
         </TouchableOpacity>
       </View>
