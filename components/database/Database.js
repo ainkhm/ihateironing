@@ -5,7 +5,7 @@ export const COLOURS = {
     red: '#C04345',
     blue: '#0043F9',
     backgroundLight: '#F0F0F3',
-    backgroundMedium: '#B9B9B9',
+    backgroundMedium: '#000000',
     backgroundDark: '#777777',
   };
   

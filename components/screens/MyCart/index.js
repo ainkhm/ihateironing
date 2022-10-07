@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {
   View,
+  SafeAreaView,
   Text,
   ScrollView,
   TouchableOpacity,
@@ -148,10 +149,10 @@ const MyCart = ({navigation}) => {
                   maxWidth: '85%',
                   marginRight: 4,
                 }}>
-                &#8377;{data.productPrice}
+                &#163;{data.productPrice}
               </Text>
               <Text>
-                (~&#8377;
+                (~&#163;
                 {data.productPrice + data.productPrice / 20})
               </Text>
             </View>
@@ -222,7 +223,7 @@ const MyCart = ({navigation}) => {
   };
 
   return (
-    <View
+    <SafeAreaView
       style={{
         width: '100%',
         height: '100%',
@@ -463,7 +464,7 @@ const MyCart = ({navigation}) => {
                   color: COLOURS.black,
                   opacity: 0.8,
                 }}>
-                &#8377;{total}.00
+                &#163;{total}.00
               </Text>
             </View>
             <View
@@ -490,7 +491,7 @@ const MyCart = ({navigation}) => {
                   color: COLOURS.black,
                   opacity: 0.8,
                 }}>
-                &#8377;{total / 20}
+                &#163;{total / 20}
               </Text>
             </View>
             <View
@@ -515,7 +516,7 @@ const MyCart = ({navigation}) => {
                   fontWeight: '500',
                   color: COLOURS.black,
                 }}>
-                &#8377;{total + total / 20}
+                &#163;{total + total / 20}
               </Text>
             </View>
           </View>
@@ -549,11 +550,11 @@ const MyCart = ({navigation}) => {
               color: COLOURS.white,
               textTransform: 'uppercase',
             }}>
-            CHECKOUT (&#8377;{total + total / 20} )
+            CHECKOUT (&#163;{total + total / 20} )
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 

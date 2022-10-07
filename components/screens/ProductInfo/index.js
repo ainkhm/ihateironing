@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {
   View,
+  SafeAreaView,
   Text,
   StatusBar,
   ScrollView,
@@ -104,7 +105,7 @@ const ProductInfo = ({route, navigation}) => {
   };
 
   return (
-    <View
+    <SafeAreaView
       style={{
         width: '100%',
         height: '100%',
@@ -319,10 +320,10 @@ const ProductInfo = ({route, navigation}) => {
                 color: COLOURS.black,
                 marginBottom: 4,
               }}>
-              &#8377; {product.productPrice}.00
+              &#163; {product.productPrice}.00
             </Text>
             <Text>
-              Tax Rate 2%~ &#8377;{product.productPrice / 20} (&#8377;
+              Tax Rate 2%~ &#163;{product.productPrice / 20} (&#163;
               {product.productPrice + product.productPrice / 20})
             </Text>
           </View>
@@ -360,7 +361,7 @@ const ProductInfo = ({route, navigation}) => {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
