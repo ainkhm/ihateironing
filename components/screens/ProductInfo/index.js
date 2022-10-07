@@ -174,7 +174,7 @@ const ProductInfo = ({route, navigation}) => {
                   });
                   return (
                     <Animated.View
-                      key={index}
+                      key={`key-${index}`}
                       style={{
                         width: '16%',
                         height: 2.4,

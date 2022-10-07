@@ -8,13 +8,15 @@ import {
   Image,
 } from 'react-native';
 import Toast from 'react-native-root-toast';
+import api from '../../services/api'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {COLOURS, Items} from '../../database/Database';
+import {COLOURS} from '../../database/Database';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const MyCart = ({navigation}) => {
-  const [product, setProduct] = useState();
+  const [product, setProduct ] = useState();
   const [total, setTotal] = useState(null);
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -24,13 +26,15 @@ const MyCart = ({navigation}) => {
     return unsubscribe;
   }, [navigation]);
 
-  //get data from local DB by ID
+
   const getDataFromDB = async () => {
+    let response = await api.get('items');
     let items = await AsyncStorage.getItem('cartItems');
+
     items = JSON.parse(items);
     let productData = [];
     if (items) {
-      Items.forEach(data => {
+      response.data.forEach(data => {
         if (items.includes(data.id)) {
           productData.push(data);
           return;
@@ -44,20 +48,20 @@ const MyCart = ({navigation}) => {
     }
   };
 
-  //get total price of all items in the cart
   const getTotal = productData => {
     let total = 0;
     for (let index = 0; index < productData.length; index++) {
-      let productPrice = productData[index].productPrice;
-      total = total + productPrice;
+      let productPrice = productData[index].price;
+      total = productPrice;
     }
     setTotal(total);
   };
 
-  //remove data from Cart
+
 
   const removeItemFromCart = async id => {
     let itemArray = await AsyncStorage.getItem('cartItems');
+    console.log(itemArray)
     itemArray = JSON.parse(itemArray);
     if (itemArray) {
       let array = itemArray;
@@ -72,7 +76,18 @@ const MyCart = ({navigation}) => {
     }
   };
 
-  //checkout
+
+  const productQuantity = async (id, operation) => {
+    let items = await AsyncStorage.getItem('cartItems');
+        if(items.includes(id)) {  
+            operation ? setQuantity(quantity + 1) : setQuantity(quantity <= 0 ? 0 : quantity - 1);
+
+            const newObj = Object.assign({}, ...product, {quantity: quantity})
+            setProduct([newObj])
+        }
+        
+  }
+
 
   const checkOut = async () => {
     try {
@@ -88,9 +103,8 @@ const MyCart = ({navigation}) => {
 
   const renderProducts = (data, index) => {
     return (
-      <TouchableOpacity
-        key={data.key}
-        onPress={() => navigation.navigate('ProductInfo', {productID: data.id})}
+      <View
+        key={`key-${index}`}
         style={{
           width: '100%',
           height: 100,
@@ -102,21 +116,22 @@ const MyCart = ({navigation}) => {
           style={{
             width: '30%',
             height: 100,
-            padding: 14,
             justifyContent: 'center',
             alignItems: 'center',
             backgroundColor: COLOURS.backgroundLight,
             borderRadius: 10,
             marginRight: 22,
           }}>
+       
           <Image
-            source={data.productImage}
+            source={{uri: data.image}}
             style={{
               width: '100%',
               height: '100%',
-              resizeMode: 'contain',
+              resizeMode: 'cover',
             }}
           />
+       
         </View>
         <View
           style={{
@@ -125,6 +140,7 @@ const MyCart = ({navigation}) => {
             justifyContent: 'space-around',
           }}>
           <View style={{}}>
+          <TouchableOpacity  onPress={() => navigation.navigate('ProductInfo', {productID: data.id})}>
             <Text
               style={{
                 fontSize: 14,
@@ -133,8 +149,9 @@ const MyCart = ({navigation}) => {
                 fontWeight: '600',
                 letterSpacing: 1,
               }}>
-              {data.productName}
+              {data.name}
             </Text>
+            </TouchableOpacity>
             <View
               style={{
                 marginTop: 4,
@@ -149,11 +166,10 @@ const MyCart = ({navigation}) => {
                   maxWidth: '85%',
                   marginRight: 4,
                 }}>
-                &#163;{data.productPrice}
+                &#163;{data.price}
               </Text>
               <Text>
-                (~&#163;
-                {data.productPrice + data.productPrice / 20})
+            
               </Text>
             </View>
           </View>
@@ -168,6 +184,8 @@ const MyCart = ({navigation}) => {
                 flexDirection: 'row',
                 alignItems: 'center',
               }}>
+
+            <TouchableOpacity onPress={()=> productQuantity(data.id, false)}>
               <View
                 style={{
                   borderRadius: 100,
@@ -185,7 +203,9 @@ const MyCart = ({navigation}) => {
                   }}
                 />
               </View>
-              <Text>1</Text>
+            </TouchableOpacity>
+              <Text>{data.quantity ? data.quantity : quantity}</Text>
+              <TouchableOpacity  onPress={() =>  productQuantity(data.id, true)}>
               <View
                 style={{
                   borderRadius: 100,
@@ -203,6 +223,7 @@ const MyCart = ({navigation}) => {
                   }}
                 />
               </View>
+              </TouchableOpacity>
             </View>
             <TouchableOpacity onPress={() => removeItemFromCart(data.id)}>
               <MaterialCommunityIcons
@@ -218,7 +239,7 @@ const MyCart = ({navigation}) => {
             </TouchableOpacity>
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -464,7 +485,7 @@ const MyCart = ({navigation}) => {
                   color: COLOURS.black,
                   opacity: 0.8,
                 }}>
-                &#163;{total}.00
+                &#163;{total}
               </Text>
             </View>
             <View
@@ -474,25 +495,6 @@ const MyCart = ({navigation}) => {
                 justifyContent: 'space-between',
                 marginBottom: 22,
               }}>
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: '400',
-                  maxWidth: '80%',
-                  color: COLOURS.black,
-                  opacity: 0.5,
-                }}>
-                Shipping Tax
-              </Text>
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: '400',
-                  color: COLOURS.black,
-                  opacity: 0.8,
-                }}>
-                &#163;{total / 20}
-              </Text>
             </View>
             <View
               style={{
@@ -516,7 +518,7 @@ const MyCart = ({navigation}) => {
                   fontWeight: '500',
                   color: COLOURS.black,
                 }}>
-                &#163;{total + total / 20}
+                &#163;{total}
               </Text>
             </View>
           </View>
@@ -550,7 +552,7 @@ const MyCart = ({navigation}) => {
               color: COLOURS.white,
               textTransform: 'uppercase',
             }}>
-            CHECKOUT (&#163;{total + total / 20} )
+            CHECKOUT (&#163;{total} )
           </Text>
         </TouchableOpacity>
       </View>

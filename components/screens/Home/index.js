@@ -10,17 +10,23 @@ import {
 } from 'react-native';
 import api from '../../services/api'
 import {COLOURS} from '../../database/Database';
-import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Home = ({navigation}) => {
   const [products, setProducts] = useState([]);
+  const [cartItems, setCartItems] = useState([]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       async function getItems() {
         let response = await api.get('items');
+        let items = await AsyncStorage.getItem('cartItems');
+     
+        setCartItems(JSON.parse(items).length)
+        
         setProducts(response.data);
+        
       }
       getItems()
     });
@@ -28,6 +34,7 @@ const Home = ({navigation}) => {
     return unsubscribe;
   }, [navigation]);
 
+  
 
   const ProductCard = ({data}) => {
     return (
@@ -86,33 +93,27 @@ const Home = ({navigation}) => {
           style={{
             width: '100%',
             flexDirection: 'row',
-            justifyContent: 'space-between',
+            justifyContent: 'flex-end',
             padding: 16,
           }}>
-          <TouchableOpacity>
-            <Entypo
-              name="shopping-bag"
-              style={{
-                fontSize: 18,
-                color: COLOURS.backgroundMedium,
-                padding: 12,
-                borderRadius: 10,
-                backgroundColor: COLOURS.backgroundLight,
-              }}
-            />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => navigation.navigate('MyCart')}>
+          <TouchableOpacity onPress={() => navigation.navigate('MyCart')} style={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+            alignItems: 'center',
+            padding: 12,
+            borderRadius: 10,
+            borderWidth: 1,
+            borderColor: COLOURS.backgroundLight,
+          }}>
             <MaterialCommunityIcons
               name="cart"
               style={{
                 fontSize: 18,
                 color: COLOURS.backgroundMedium,
-                padding: 12,
-                borderRadius: 10,
-                borderWidth: 1,
-                borderColor: COLOURS.backgroundLight,
               }}
             />
+            <Text>{cartItems}</Text>
           </TouchableOpacity>
         </View>
         <View
