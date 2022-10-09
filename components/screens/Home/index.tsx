@@ -1,40 +1,25 @@
-import React, {useState, useEffect} from 'react';
+import React,{ FC } from 'react';
 import {
   View,
   SafeAreaView,
   Text,
   StatusBar,
   ScrollView,
-  TouchableOpacity,
+  TouchableOpacity, 
   Image,
 } from 'react-native';
-import api from '../../services/api'
-import {COLOURS} from '../../database/Database';
+import { NavigationState, NavigationParams, NavigationScreenProp } from "react-navigation";
+import { COLOURS } from '../../common/constants';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import useProducts from "../../hooks/useProducts";
 
-const Home = ({navigation}) => {
-  const [products, setProducts] = useState([]);
-  const [cartItems, setCartItems] = useState([]);
+interface Props {
+  navigation: NavigationScreenProp<NavigationState, NavigationParams>
+}
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      async function getItems() {
-        let response = await api.get('items');
-        let items = await AsyncStorage.getItem('cartItems');
-     
-        setCartItems(JSON.parse(items).length)
-        
-        setProducts(response.data);
-        
-      }
-      getItems()
-    });
+const Home:FC<Props> = ({navigation}) => {
 
-    return unsubscribe;
-  }, [navigation]);
-
-  
+  const { products } = useProducts();
 
   const ProductCard = ({data}) => {
     return (
@@ -113,7 +98,7 @@ const Home = ({navigation}) => {
                 color: COLOURS.backgroundMedium,
               }}
             />
-            <Text>{cartItems}</Text>
+            <Text>{2}</Text>
           </TouchableOpacity>
         </View>
         <View
@@ -181,7 +166,7 @@ const Home = ({navigation}) => {
             <Text
               style={{
                 fontSize: 14,
-                color: COLOURS.blue,
+                color: COLOURS.black,
                 fontWeight: '400',
               }}>
               SeeAll

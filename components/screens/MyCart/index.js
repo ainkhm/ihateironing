@@ -10,7 +10,7 @@ import {
 import Toast from 'react-native-root-toast';
 import api from '../../services/api'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {COLOURS} from '../../database/Database';
+import { COLOURS } from '../../common/constants';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const MyCart = ({navigation}) => {

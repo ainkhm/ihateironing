@@ -4,7 +4,7 @@ const baseURL = "https://virtserver.swaggerhub.com/I425/ReactJS/1.0.0";
 
 export const getQuery = async <T>(url = ""): Promise<T> => {
   const { data } = await axios(baseURL + url);
-  return data.json();
+  return data;
 };
 
 export const postQuery = async (url = "", body = {}) => {

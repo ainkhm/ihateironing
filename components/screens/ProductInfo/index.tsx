@@ -12,8 +12,7 @@ import {
   Animated,
 } from 'react-native';
 import Toast from 'react-native-root-toast';
-import api from '../../services/api'
-import {COLOURS,} from '../../database/Database';
+import { COLOURS } from '../../common/constants';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
