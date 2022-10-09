@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { NavigationState, NavigationParams, NavigationScreenProp } from "react-navigation";
 import { COLOURS } from '../../common/constants';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import useProducts from "../../hooks/useProducts";
 
 interface Props {
@@ -24,7 +24,7 @@ const Home:FC<Props> = ({navigation}) => {
   const ProductCard = ({data}) => {
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('ProductInfo', {productID: data.id})}
+        onPress={() => navigation.navigate('ProductInfo', {id: data.id})}
         style={{
           width: '48%',
           marginVertical: 14,

@@ -13,7 +13,7 @@ getQuery<
 
 export const resetCart = () => deleteQuery("/cart");
 
-export const deleteYourItem = (itemId: Item["id"]) =>
+export const deleteItem = (itemId: Item["id"]) =>
 deleteQuery(`/cart/${itemId}`);
 
 export const updateItem = (
