@@ -25,11 +25,14 @@ const useCart = () => {
   const [cartItems, setCartItems] = useContext(CartContext)!;
   const [isLoading, setIsLoading] = useState(false)!;
 
+  
+
   useEffect(() => {
     setIsLoading(true);
     showItems()
       .then((cartData) => {
         setCartItems(mapCartItems(cartData));
+       
       })
       .catch(console.error)
       .finally(() => setIsLoading(false));
@@ -60,12 +63,12 @@ const useCart = () => {
   };
 
   const addCartItem = useCallback(
-    (product: Product) =>
+    (product: Product) => {
       setCartItems((oldCartItems) => {
         const foundedItemIndex = oldCartItems.findIndex(
           (item) => item.id === product.id
         );
-
+     
         if (foundedItemIndex > -1) {
           const copyOfOldCartItems = [...oldCartItems];
           const foundedItem = oldCartItems[foundedItemIndex];
@@ -85,7 +88,8 @@ const useCart = () => {
         addItemApi(newCartItem);
 
         return oldCartItems.concat({ ...product, quantity: 1 });
-      }),
+      })
+        },
     []
   );
 

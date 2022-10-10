@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { FC } from 'react';
 import {
   View,
   SafeAreaView,
@@ -7,97 +7,26 @@ import {
   TouchableOpacity,
   Image,
 } from 'react-native';
+import { NavigationState, NavigationParams, NavigationScreenProp } from "react-navigation";
 import Toast from 'react-native-root-toast';
-import api from '../../services/api'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { COLOURS } from '../../common/constants';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MaterialCommunityIcons } from 'react-native-vector-icons/';
+import useCart from "../../hooks/useCart";
 
-const MyCart = ({navigation}) => {
-  const [product, setProduct ] = useState();
-  const [total, setTotal] = useState(null);
-  const [quantity, setQuantity] = useState(1);
+interface Props {
+  navigation: NavigationScreenProp<NavigationState, NavigationParams>
+}
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      getDataFromDB();
-    });
+const MyCart:FC<Props> = ({navigation}) => {
+  const { cartItems, addCartItem, removeCartItem, clearCart } = useCart();
 
-    return unsubscribe;
-  }, [navigation]);
+  const totalPrice = cartItems.map(item => {
+   return item.price * item.quantity
+  })
 
-
-  const getDataFromDB = async () => {
-    let response = await api.get('items');
-    let items = await AsyncStorage.getItem('cartItems');
-
-    items = JSON.parse(items);
-    let productData = [];
-    if (items) {
-      response.data.forEach(data => {
-        if (items.includes(data.id)) {
-          productData.push(data);
-          return;
-        }
-      });
-      setProduct(productData);
-      getTotal(productData);
-    } else {
-      setProduct(false);
-      getTotal(false);
-    }
-  };
-
-  const getTotal = productData => {
-    let total = 0;
-    for (let index = 0; index < productData.length; index++) {
-      let productPrice = productData[index].price;
-      total = productPrice;
-    }
-    setTotal(total);
-  };
-
-
-
-  const removeItemFromCart = async id => {
-    let itemArray = await AsyncStorage.getItem('cartItems');
-    console.log(itemArray)
-    itemArray = JSON.parse(itemArray);
-    if (itemArray) {
-      let array = itemArray;
-      for (let index = 0; index < array.length; index++) {
-        if (array[index] == id) {
-          array.splice(index, 1);
-        }
-
-        await AsyncStorage.setItem('cartItems', JSON.stringify(array));
-        getDataFromDB();
-      }
-    }
-  };
-
-
-  const productQuantity = async (id, operation) => {
-    let items = await AsyncStorage.getItem('cartItems');
-        if(items.includes(id)) {  
-            operation ? setQuantity(quantity + 1) : setQuantity(quantity <= 0 ? 0 : quantity - 1);
-
-            const newObj = Object.assign({}, ...product, {quantity: quantity})
-            setProduct([newObj])
-        }
-        
-  }
-
-
-  const checkOut = async () => {
-    try {
-      await AsyncStorage.removeItem('cartItems');
-    } catch (error) {
-      return error;
-    }
-
+  const checkOut = () => {
+    clearCart
     Toast.show('Items will be Deliverd SOON!', Toast.SHORT);
-
     navigation.navigate('Home');
   };
 
@@ -185,7 +114,7 @@ const MyCart = ({navigation}) => {
                 alignItems: 'center',
               }}>
 
-            <TouchableOpacity onPress={()=> productQuantity(data.id, false)}>
+            <TouchableOpacity onPress={()=> removeCartItem(data.id)}>
               <View
                 style={{
                   borderRadius: 100,
@@ -204,8 +133,8 @@ const MyCart = ({navigation}) => {
                 />
               </View>
             </TouchableOpacity>
-              <Text>{data.quantity ? data.quantity : quantity}</Text>
-              <TouchableOpacity  onPress={() =>  productQuantity(data.id, true)}>
+              <Text>{data.quantity}</Text>
+              <TouchableOpacity  onPress={() => addCartItem(data)}>
               <View
                 style={{
                   borderRadius: 100,
@@ -225,7 +154,7 @@ const MyCart = ({navigation}) => {
               </View>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={() => removeItemFromCart(data.id)}>
+            <TouchableOpacity onPress={() => removeCartItem(data.id, true)}>
               <MaterialCommunityIcons
                 name="delete-outline"
                 style={{
@@ -296,7 +225,7 @@ const MyCart = ({navigation}) => {
           My Cart
         </Text>
         <View style={{paddingHorizontal: 16}}>
-          {product ? product.map(renderProducts) : null}
+          {cartItems.map(renderProducts)}
         </View>
         <View>
           <View
@@ -485,7 +414,7 @@ const MyCart = ({navigation}) => {
                   color: COLOURS.black,
                   opacity: 0.8,
                 }}>
-                &#163;{total}
+                &#163; {totalPrice[0]}
               </Text>
             </View>
             <View
@@ -518,7 +447,7 @@ const MyCart = ({navigation}) => {
                   fontWeight: '500',
                   color: COLOURS.black,
                 }}>
-                &#163;{total}
+                &#163;{totalPrice[0]}
               </Text>
             </View>
           </View>
@@ -535,11 +464,11 @@ const MyCart = ({navigation}) => {
           alignItems: 'center',
         }}>
         <TouchableOpacity
-          onPress={() => (total != 0 ? checkOut() : null)}
+         onPress={() => (totalPrice[0] != 0 ? checkOut() : null)}
           style={{
             width: '86%',
             height: '90%',
-            backgroundColor: COLOURS.blue,
+            backgroundColor: COLOURS.black,
             borderRadius: 20,
             justifyContent: 'center',
             alignItems: 'center',
@@ -552,7 +481,7 @@ const MyCart = ({navigation}) => {
               color: COLOURS.white,
               textTransform: 'uppercase',
             }}>
-            CHECKOUT (&#163;{total} )
+            CHECKOUT (&#163;{totalPrice[0]} )
           </Text>
         </TouchableOpacity>
       </View>

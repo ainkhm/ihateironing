@@ -6,8 +6,8 @@ type Props = {
 };
 
 const CartContext = createContext<
-  [Item[], Dispatch<SetStateAction<Item[]>>] | null
->([[], () => {}]);
+  [Item[], Dispatch<SetStateAction<Item[]>>]
+>([[], ()=> {}]);
 
 export const CartContextProvider: FC<Props> = (props) => (
   <CartContext.Provider value={useState<Item[]>([])}>

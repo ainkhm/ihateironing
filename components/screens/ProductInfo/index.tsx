@@ -36,6 +36,13 @@ const ProductInfo: FC<Props> = ({ navigation }) => {
   const scrollX = new Animated.Value(0);
   let position = Animated.divide(scrollX, width);
 
+ 
+
+  const handleCart = () => {
+    addCartItem(product!)
+    navigation.navigate('MyCart')
+  }
+
   const renderProduct = ({item, index}) => {
     return (
       <View
@@ -277,7 +284,7 @@ const ProductInfo: FC<Props> = ({ navigation }) => {
           alignItems: 'center',
         }}>
         <TouchableOpacity
-          onPress={() => addCartItem(product)}
+          onPress={() => handleCart()}
           style={{
             width: '86%',
             height: '90%',

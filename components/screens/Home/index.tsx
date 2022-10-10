@@ -12,6 +12,7 @@ import { NavigationState, NavigationParams, NavigationScreenProp } from "react-n
 import { COLOURS } from '../../common/constants';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import useProducts from "../../hooks/useProducts";
+import useCart from "../../hooks/useCart";
 
 interface Props {
   navigation: NavigationScreenProp<NavigationState, NavigationParams>
@@ -20,6 +21,7 @@ interface Props {
 const Home:FC<Props> = ({navigation}) => {
 
   const { products } = useProducts();
+  const { cartItems } = useCart();
 
   const ProductCard = ({data}) => {
     return (
@@ -98,7 +100,7 @@ const Home:FC<Props> = ({navigation}) => {
                 color: COLOURS.backgroundMedium,
               }}
             />
-            <Text>{2}</Text>
+            <Text>{products.length}</Text>
           </TouchableOpacity>
         </View>
         <View
