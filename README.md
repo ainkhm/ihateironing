@@ -2,7 +2,7 @@
 
 A test e-commerce application for IhateIroning built with React Navigation and TypeScript, featuring product scripts, checkout process, and product cards.
 
-|![](https://github.com/ainkhm/ihateironing/blob/main/.github/cover_1.png?raw=true)|![](https://github.com/ainkhm/ihateironing/blob/main/.github/cover_1.png?raw=true)|
+|![](https://github.com/ainkhm/ihateironing/blob/main/.github/cover_1.png?raw=true)|![](https://github.com/ainkhm/ihateironing/blob/main/.github/cover_2.png?raw=true)|
 |:-:|:-:|
 
 ## Features
